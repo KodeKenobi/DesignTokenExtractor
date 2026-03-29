@@ -1,0 +1,103 @@
+# =========================
+# OS Generated Files
+# =========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# =========================
+# Editor & IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+.classpath
+*.code-workspace
+
+# =========================
+# Node / NPM
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.npm/
+.yarn/
+
+# =========================
+# Build & Distribution
+# =========================
+dist/
+build/
+out/
+*.zip
+*.crx
+*.pem
+*.xpi
+
+# =========================
+# Environment & Secrets
+# =========================
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+*.key
+*.secret
+
+# =========================
+# Testing & Coverage
+# =========================
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log
+debug.log
+
+# =========================
+# Temp Files
+# =========================
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+*.cache
+
+# =========================
+# Chrome Extension Specific
+# =========================
+web-ext-artifacts/
+
+# =========================
+# AI / Tooling
+# =========================
+.gemini/
+.cursor/
+.copilot/
+.aider*

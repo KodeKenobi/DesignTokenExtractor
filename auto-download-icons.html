@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto-Download Icons</title>
+</head>
+<body>
+  <h1>Downloading icons...</h1>
+  <script>
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+      canvas.width = size;
+      canvas.height = size;
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = 'white';
+      ctx.globalAlpha = 0.9;
+      const padding = size * 0.15;
+      const squareSize = size * 0.25;
+      ctx.fillRect(padding, padding, squareSize, squareSize);
+      ctx.fillRect(size / 2 - squareSize / 2, size / 2 - squareSize / 2, squareSize, squareSize);
+      ctx.fillRect(size - padding - squareSize, size - padding - squareSize, squareSize, squareSize);
+      ctx.globalAlpha = 1.0;
+    }
+    
+    function downloadIcon(size) {
+      const canvas = document.createElement('canvas');
+      drawIcon(canvas, size);
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon${size}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+    
+    const sizes = [16, 32, 48, 128];
+    let index = 0;
+    
+    function downloadNext() {
+      if (index < sizes.length) {
+        downloadIcon(sizes[index]);
+        index++;
+        setTimeout(downloadNext, 500);
+      } else {
+        document.body.innerHTML = '<h1>✅ All icons downloaded!<br>Move them to the icons/ folder.</h1>';
+      }
+    }
+    
+    setTimeout(downloadNext, 500);
+  </script>
+</body>
+</html>
