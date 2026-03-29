@@ -305,6 +305,4 @@ All processing happens locally in your browser. No data is sent to external serv
 Exported formats are production-ready. JSON includes complete token data. CSS Variables drop directly into stylesheets. SCSS Variables integrate with Sass pipelines. Tailwind Config follows the official format. The Live Editor lets you prototype changes without touching source code.
 
 **FOR DESIGNERS:**
-Extract color palettes, study typography hierarchies, and analyze spacing systems from any website. Use the Live Editor to experiment with design variations and present alternatives to clients — no code required.#   D e s i g n T o k e n E x t r a c t o r  
- #   D e s i g n T o k e n E x t r a c t o r  
- 
+Extract color palettes, study typography hierarchies, and analyze spacing systems from any website. Use the Live Editor to experiment with design variations and present alternatives to clients — no code required.
