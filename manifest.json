@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Design Token Extractor",
   "short_name": "Token Extractor",
-  "version": "1.1.0",
+  "version": "1.1.0.1",
   "description": "Extract design system tokens (colors, spacing, typography) from any website",
   "icons": {
     "16": "icons/icon16.png",
@@ -21,8 +21,15 @@
   "side_panel": {
     "default_path": "popup.html"
   },
-  "permissions": ["activeTab", "scripting", "tabs", "sidePanel"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "commands": {
     "triggerCapture": {
       "suggested_key": {
@@ -35,8 +42,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
