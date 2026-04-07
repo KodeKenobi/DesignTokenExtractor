@@ -21,7 +21,7 @@
   "side_panel": {
     "default_path": "popup.html"
   },
-  "permissions": ["activeTab", "scripting", "tabs", "storage", "sidePanel"],
+  "permissions": ["activeTab", "scripting", "tabs", "sidePanel"],
   "host_permissions": ["<all_urls>"],
   "commands": {
     "triggerCapture": {

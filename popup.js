@@ -61,6 +61,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       desc: "The ultimate in-browser powerhouse. Convert 2GB videos, edit/sign PDFs, extract text with OCR, and automate with Developer APIs—no software required.",
       features: ["Pro Video & GIF Converter", "OCR & PDF Document Suite", "Developer API & QR Tools"],
       badge: "FREE"
+    },
+    "https://chromewebstore.google.com/detail/leakfinder/aocfmcfgbmobbhebbedjognakcfdgcbc?authuser=0&hl=en": {
+      title: "LeakFinder Security Scanner",
+      desc: "Detect browser-visible security leaks: exposed endpoints, insecure storage, weak CORS, and embedded secrets.",
+      features: ["Secret & Token Scanning", "CORS & Header Audit", "Sensitive Storage Detection", "Exposed Endpoint Mapping"],
+      badge: "NEW"
     }
   };
 
