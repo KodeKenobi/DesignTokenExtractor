@@ -1,4 +1,4 @@
-(function() {
+(function () {
   if (window.__teEditorActive) return;
   window.__teEditorActive = true;
 
@@ -10,7 +10,8 @@
     const styles = window.getComputedStyle(el);
     const bg = styles.backgroundColor;
     if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") return bg;
-    if (el.parentElement && el.parentElement !== document.documentElement) return getVisibleBackgroundColor(el.parentElement);
+    if (el.parentElement && el.parentElement !== document.documentElement)
+      return getVisibleBackgroundColor(el.parentElement);
     return bg || "";
   }
 
@@ -37,6 +38,15 @@
     e.preventDefault();
     e.stopPropagation();
 
+    const isFloatingMode = !!window.__teFloatingPanel;
+    if (isFloatingMode) {
+      console.log("[TokenExtractor][Editor][Floating] Click detected", {
+        tagName: e.target?.tagName,
+        id: e.target?.id || "",
+        className: e.target?.className || "",
+      });
+    }
+
     if (selectedElement && selectedElement !== e.target) {
       selectedElement.style.outline = "";
       selectedElement.style.boxShadow = "";
@@ -50,8 +60,11 @@
     // Send styles to sidebar
     const styles = window.getComputedStyle(selectedElement);
     const tagName = selectedElement.tagName.toLowerCase();
-    const className = selectedElement.className ? `.${selectedElement.className.split(" ").join(".")}` : "";
+    const className = selectedElement.className
+      ? `.${selectedElement.className.split(" ").join(".")}`
+      : "";
     const id = selectedElement.id ? `#${selectedElement.id}` : "";
+    const elementInfo = `${tagName}${id}${className}`;
 
     const getShorthand = (prop) => {
       const val = styles[prop];
@@ -64,9 +77,9 @@
       return `${t} ${r} ${b} ${l}`;
     };
 
-    chrome.runtime.sendMessage({
+    const payload = {
       action: "elementSelected",
-      info: `${tagName}${id}${className}`,
+      info: elementInfo,
       styles: {
         fontFamily: styles.fontFamily,
         fontSize: styles.fontSize,
@@ -76,7 +89,33 @@
         backgroundColor: getVisibleBackgroundColor(selectedElement),
         borderColor: styles.borderColor || styles.borderTopColor || "",
         padding: getShorthand("padding"),
-        margin: getShorthand("margin")
+        margin: getShorthand("margin"),
+      },
+    };
+
+    if (isFloatingMode) {
+      console.log("[TokenExtractor][Editor][Floating] Element selected", {
+        info: elementInfo,
+        fontFamily: payload.styles.fontFamily,
+        fontSize: payload.styles.fontSize,
+        color: payload.styles.color,
+        backgroundColor: payload.styles.backgroundColor,
+      });
+    }
+
+    chrome.runtime.sendMessage(payload, () => {
+      if (chrome.runtime.lastError) {
+        console.warn(
+          "[TokenExtractor][Editor][Floating] elementSelected delivery failed:",
+          chrome.runtime.lastError.message,
+        );
+        return;
+      }
+
+      if (isFloatingMode) {
+        console.log(
+          "[TokenExtractor][Editor][Floating] elementSelected message delivered",
+        );
       }
     });
   }
@@ -90,7 +129,7 @@
       } else {
         disableEditor();
         chrome.runtime.sendMessage({
-          action: "editorClosed"
+          action: "editorClosed",
         });
       }
     }
@@ -178,12 +217,14 @@
   }
 
   function handleChoice(type) {
-    if (type === "pay") chrome.runtime.sendMessage({
-      action: "openPayment"
-    });
-    else chrome.runtime.sendMessage({
-      action: "openAd"
-    });
+    if (type === "pay")
+      chrome.runtime.sendMessage({
+        action: "openPayment",
+      });
+    else
+      chrome.runtime.sendMessage({
+        action: "openAd",
+      });
     document.getElementById("dte-support-modal-wrapper").style.display = "none";
     if (pendingAction) {
       pendingAction();
@@ -200,50 +241,91 @@
       document.addEventListener("click", handleClick, true);
       document.addEventListener("keydown", handleKeyDown);
       sendResponse({
-        success: true
+        success: true,
       });
     } else if (request.action === "disableEditor") {
       disableEditor();
       sendResponse({
-        success: true
+        success: true,
       });
     } else if (request.action === "checkEditorState") {
       sendResponse({
-        enabled: editorEnabled
+        enabled: editorEnabled,
       });
     } else if (request.action === "updateElementStyle" && selectedElement) {
       selectedElement.style[request.property] = request.value;
+      sendResponse({
+        success: true,
+      });
+    } else if (request.action === "updateElementStyle") {
+      sendResponse({
+        success: false,
+        error: "No element is selected",
+      });
     } else if (request.action === "resetElementStyle" && selectedElement) {
       selectedElement.style.cssText = "";
+      sendResponse({
+        success: true,
+      });
+    } else if (request.action === "resetElementStyle") {
+      sendResponse({
+        success: false,
+        error: "No element is selected",
+      });
     } else if (request.action.startsWith("copyElement") && selectedElement) {
       showSupportModal(() => {
         const s = window.getComputedStyle(selectedElement);
         const tagName = selectedElement.tagName.toLowerCase();
         let content = "";
-        
+
         if (request.action.endsWith("CSS")) {
           content = `/* ${tagName} */\nfont-family: ${s.fontFamily};\nfont-size: ${s.fontSize};\nfont-weight: ${s.fontWeight};\ncolor: ${s.color};\nbackground-color: ${s.backgroundColor};\npadding: ${s.padding};\nmargin: ${s.margin};`;
         } else if (request.action.endsWith("JSON")) {
-          content = JSON.stringify({
-            tagName,
-            fontFamily: s.fontFamily,
-            fontSize: s.fontSize,
-            fontWeight: s.fontWeight,
-            color: s.color,
-            backgroundColor: s.backgroundColor,
-            padding: s.padding,
-            margin: s.margin
-          }, null, 2);
+          content = JSON.stringify(
+            {
+              tagName,
+              fontFamily: s.fontFamily,
+              fontSize: s.fontSize,
+              fontWeight: s.fontWeight,
+              color: s.color,
+              backgroundColor: s.backgroundColor,
+              padding: s.padding,
+              margin: s.margin,
+            },
+            null,
+            2,
+          );
         } else if (request.action.endsWith("SCSS")) {
           content = `$${tagName}-font-family: ${s.fontFamily};\n$${tagName}-font-size: ${s.fontSize};\n$${tagName}-color: ${s.color};\n$${tagName}-bg: ${s.backgroundColor};`;
         } else if (request.action.endsWith("TW")) {
           content = `className="text-[${s.fontSize}] font-[${s.fontWeight}] text-[${s.color}] bg-[${s.backgroundColor}]"`;
         }
-        
-        navigator.clipboard.writeText(content);
-      });
-    }
-    return true;
-  });
 
+        Promise.resolve(navigator.clipboard.writeText(content))
+          .then(() => {
+            sendResponse({
+              success: true,
+            });
+          })
+          .catch((error) => {
+            sendResponse({
+              error: error?.message || "Failed to copy element styles",
+            });
+          });
+      });
+      return true;
+    } else if (request.action.startsWith("copyElement")) {
+      sendResponse({
+        success: false,
+        error: "No element is selected",
+      });
+      return false;
+    }
+
+    sendResponse({
+      success: false,
+      ignored: true,
+    });
+    return false;
+  });
 })();

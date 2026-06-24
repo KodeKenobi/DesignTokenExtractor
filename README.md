@@ -2,26 +2,21 @@
 
 > Extract design system tokens (colors, spacing, typography) from any website and export them in multiple formats.
 
-![Version](https://img.shields.io/badge/version-1.1.0-6366f1) ![Manifest](https://img.shields.io/badge/manifest-v3-10b981) ![License](https://img.shields.io/badge/license-MIT-f59e0b)
+![Version](https://img.shields.io/badge/version-2.0.0-6366f1) ![Manifest](https://img.shields.io/badge/manifest-v3-10b981) ![License](https://img.shields.io/badge/license-MIT-f59e0b)
+
+[View the changelog](CHANGELOG.md)
 
 ---
 
-## What's New in v1.1.0
+## What's New in v2.0.0
 
-- **Side Panel Architecture** — The entire extension now runs inside Chrome's native Side Panel for a seamless, persistent workflow alongside any webpage.
-- **Live Page Editor** — Select any element on the page and edit its typography, colors, and spacing in real time from the sidebar. Changes apply instantly.
-- **Minimize to Bubble** — Collapse the sidebar into a tiny, draggable glassmorphic overlay so you can view the full-width page (great for screenshots). Click the bubble to reopen instantly.
-- **Smart Capture (Alt+S)** — One-click intelligent page capture with Shadow DOM encapsulation for zero style conflicts.
-- **Tailwind Export** — New fourth export format generates Tailwind CSS utility classes for any extracted token set.
-- **Improved Color Detection** — Robust background and border color extraction that walks the DOM tree to find the true visible color, even on transparent elements.
-- **Improved Spacing Detection** — Shorthand reconstruction logic ensures accurate padding and margin values even when browsers report empty shorthands.
-- **Interactive Info Buttons** — Pulsating info indicators on token cards guide users to deeper context and usage details.
+- **Major release bump** — Version metadata, badges, and release notes are now aligned at 2.0.0.
+- **Editor polish** — The capture flow has been tightened up for text editing, dragging, and resizing behavior.
+- **Release cleanup** — Version references in the extension manifest, package metadata, and README are now consistent.
 
 ---
 
 ## Features
-
-
 
 ## Installation
 
@@ -125,7 +120,6 @@ The extension uses a content script to:
 ## License
 
 MIT
-
 
 ## Overview
 

@@ -1,68 +1,97 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Design Token Extractor</title>
-  <style>
-    :root {
-      --bg: #0b1020;
-      --card: #111833;
-      --text: #e5ecff;
-      --muted: #9aa7d6;
-      --accent: #6ea8fe;
-      --border: #24305f;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Segoe UI, Arial, sans-serif;
-      background: radial-gradient(circle at top right, #1a2757 0%, var(--bg) 45%);
-      color: var(--text);
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-    main {
-      width: min(760px, 100%);
-      background: color-mix(in srgb, var(--card) 92%, black);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 16px 45px rgba(0,0,0,.35);
-    }
-    h1 { margin-top: 0; }
-    p { color: var(--muted); line-height: 1.6; }
-    nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
-    a {
-      color: var(--text);
-      text-decoration: none;
-      border: 1px solid var(--border);
-      background: #15204a;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-    a:hover { border-color: var(--accent); }
-    code { color: #c7d8ff; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Design Token Extractor</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --card: #111833;
+            --text: #e5ecff;
+            --muted: #9aa7d6;
+            --accent: #6ea8fe;
+            --border: #24305f;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Segoe UI, Arial, sans-serif;
+            background: radial-gradient(circle at top right, #1a2757 0%, var(--bg) 45%);
+            color: var(--text);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        main {
+            width: min(760px, 100%);
+            background: color-mix(in srgb, var(--card) 92%, black);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, .35);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        p {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        a {
+            color: var(--text);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            background: #15204a;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        a:hover {
+            border-color: var(--accent);
+        }
+
+        code {
+            color: #c7d8ff;
+        }
+    </style>
 </head>
+
 <body>
-  <main>
-    <h1>Design Token Extractor</h1>
-    <p>
-      Design Token Extractor is a Chrome extension that helps designers and developers extract
-      color, typography, spacing, and style information from websites.
-    </p>
-    <p>
-      Publisher: <strong>KodeKenobi</strong><br />
-      Repository: <a href="https://github.com/KodeKenobi/DesignTokenExtractor" target="_blank" rel="noreferrer">GitHub Repo</a>
-    </p>
-    <nav>
-      <a href="./privacy.html">Privacy Policy</a>
-      <a href="./support.html">Support</a>
-    </nav>
-  </main>
+    <main>
+        <h1>Design Token Extractor</h1>
+        <p>
+            Design Token Extractor is a Chrome extension that helps designers and developers extract
+            color, typography, spacing, and style information from websites.
+        </p>
+        <p>
+            Publisher: <strong>KodeKenobi</strong><br />
+            Repository: <a href="https://github.com/KodeKenobi/DesignTokenExtractor" target="_blank"
+                rel="noreferrer">GitHub Repo</a>
+        </p>
+        <nav>
+            <a href="./privacy.html">Privacy Policy</a>
+            <a href="./support.html">Support</a>
+        </nav>
+    </main>
 </body>
+
 </html>

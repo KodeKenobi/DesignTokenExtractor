@@ -1,4 +1,4 @@
-(function() {
+(function () {
   if (window.__teContentActive) return;
   window.__teContentActive = true;
 
@@ -42,7 +42,11 @@
       const textColor = styles.color;
       const borderColor = styles.borderColor;
 
-      if (bgColor && bgColor !== "rgba(0, 0, 0, 0)" && bgColor !== "transparent") {
+      if (
+        bgColor &&
+        bgColor !== "rgba(0, 0, 0, 0)" &&
+        bgColor !== "transparent"
+      ) {
         const rgb = parseColor(bgColor);
         if (rgb) {
           const hex = rgbToHex(rgb);
@@ -70,7 +74,10 @@
         tokens.shadows.all.push({
           value: boxShadow,
           element: element.tagName?.toLowerCase() || "unknown",
-          context: element.textContent?.trim().substring(0, 50) || element.tagName?.toLowerCase() || "unknown",
+          context:
+            element.textContent?.trim().substring(0, 50) ||
+            element.tagName?.toLowerCase() ||
+            "unknown",
         });
       }
 
@@ -80,22 +87,31 @@
       const tagName = element.tagName?.toLowerCase() || "unknown";
       const elementText = element.textContent?.trim().substring(0, 50) || "";
 
-      [{
-        value: margin,
-        type: "margin"
-      }, {
-        value: padding,
-        type: "padding"
-      }, {
-        value: gap,
-        type: "gap"
-      }].forEach(({ value, type }) => {
+      [
+        {
+          value: margin,
+          type: "margin",
+        },
+        {
+          value: padding,
+          type: "padding",
+        },
+        {
+          value: gap,
+          type: "gap",
+        },
+      ].forEach(({ value, type }) => {
         if (value && value !== "0px" && value !== "normal") {
           const values = value.split(" ").filter((v) => v && v !== "auto");
           values.forEach((val) => {
             if (val && !spacingSet.has(val)) {
               spacingSet.add(val);
-              tokens.spacing.all.push({ value: val, type, element: tagName, context: elementText || tagName });
+              tokens.spacing.all.push({
+                value: val,
+                type,
+                element: tagName,
+                context: elementText || tagName,
+              });
             }
           });
         }
@@ -109,10 +125,22 @@
       if (fontFamily && fontSize && fontSize !== "0px") {
         const fontName = fontFamily.split(",")[0].trim().replace(/['"]/g, "");
         const textSample = elementText || tagName;
-        const existingCombo = tokens.typography.combinations.find(c => c.font === fontName && c.size === fontSize && c.weight === (fontWeight || "normal"));
+        const existingCombo = tokens.typography.combinations.find(
+          (c) =>
+            c.font === fontName &&
+            c.size === fontSize &&
+            c.weight === (fontWeight || "normal"),
+        );
 
         if (!existingCombo) {
-          tokens.typography.combinations.push({ font: fontName, size: fontSize, weight: fontWeight || "normal", lineHeight, examples: [textSample || tagName], element: tagName });
+          tokens.typography.combinations.push({
+            font: fontName,
+            size: fontSize,
+            weight: fontWeight || "normal",
+            lineHeight,
+            examples: [textSample || tagName],
+            element: tagName,
+          });
         } else if (textSample && !existingCombo.examples.includes(textSample)) {
           existingCombo.examples.push(textSample);
         }
@@ -125,38 +153,69 @@
           fontSizeSet.add(fontSize);
           tokens.typography.fontSizes.push(fontSize);
         }
-        if (fontWeight && fontWeight !== "normal" && fontWeight !== "400" && !fontWeightSet.has(fontWeight)) {
+        if (
+          fontWeight &&
+          fontWeight !== "normal" &&
+          fontWeight !== "400" &&
+          !fontWeightSet.has(fontWeight)
+        ) {
           fontWeightSet.add(fontWeight);
           tokens.typography.fontWeights.push(fontWeight);
         }
       }
     });
 
-    tokens.colors.unique = Array.from(colorSet).map(hex => ({ value: hex, rgb: hexToRgb(hex) }));
-    tokens.spacing.unique = Array.from(spacingSet).sort((a,b) => (parseFloat(a) || 0) - (parseFloat(b) || 0));
-    tokens.typography.fontFamilies = [...new Set(tokens.typography.fontFamilies)];
-    tokens.typography.fontSizes = [...new Set(tokens.typography.fontSizes)].sort((a,b) => parseFloat(a)-parseFloat(b));
-    tokens.typography.fontWeights = [...new Set(tokens.typography.fontWeights)].sort((a,b) => parseInt(a)-parseInt(b));
+    tokens.colors.unique = Array.from(colorSet).map((hex) => ({
+      value: hex,
+      rgb: hexToRgb(hex),
+    }));
+    tokens.spacing.unique = Array.from(spacingSet).sort(
+      (a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0),
+    );
+    tokens.typography.fontFamilies = [
+      ...new Set(tokens.typography.fontFamilies),
+    ];
+    tokens.typography.fontSizes = [
+      ...new Set(tokens.typography.fontSizes),
+    ].sort((a, b) => parseFloat(a) - parseFloat(b));
+    tokens.typography.fontWeights = [
+      ...new Set(tokens.typography.fontWeights),
+    ].sort((a, b) => parseInt(a) - parseInt(b));
 
     return tokens;
   }
 
   function parseColor(color) {
-    if (!color || color === "transparent" || color === "rgba(0, 0, 0, 0)") return null;
+    if (!color || color === "transparent" || color === "rgba(0, 0, 0, 0)")
+      return null;
     const rgbMatch = color.match(/rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/);
-    if (rgbMatch) return { r: parseInt(rgbMatch[1]), g: parseInt(rgbMatch[2]), b: parseInt(rgbMatch[3]) };
+    if (rgbMatch)
+      return {
+        r: parseInt(rgbMatch[1]),
+        g: parseInt(rgbMatch[2]),
+        b: parseInt(rgbMatch[3]),
+      };
     const hexMatch = color.match(/#([0-9a-f]{3}|[0-9a-f]{6})/i);
     if (hexMatch) return hexToRgb(hexMatch[0]);
     return null;
   }
 
   function rgbToHex(rgb) {
-    return "#" + [rgb.r, rgb.g, rgb.b].map(x => x.toString(16).padStart(2, '0')).join("");
+    return (
+      "#" +
+      [rgb.r, rgb.g, rgb.b].map((x) => x.toString(16).padStart(2, "0")).join("")
+    );
   }
 
   function hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
   }
 
   // Bubble logic (DRAGGABLE & TOGGLEABLE)
@@ -231,7 +290,7 @@
 
     bubble.onclick = (e) => {
       if (moved) return; // Don't trigger if it was a drag
-      chrome.runtime.sendMessage({ action: "openSidePanel" });
+      chrome.runtime.sendMessage({ action: "openFloatingPanel" });
       bubble.remove();
     };
 
@@ -250,14 +309,17 @@
       } catch (error) {
         sendResponse({ error: error.message });
       }
+      return false;
     } else if (request.action === "showMinimizeBubble") {
       showMinimizeBubble();
       sendResponse({ success: true });
+      return false;
     } else if (request.action === "hideMinimizeBubble") {
       hideMinimizeBubble();
       sendResponse({ success: true });
+      return false;
     }
-    return true; 
-  });
 
+    return false;
+  });
 })();

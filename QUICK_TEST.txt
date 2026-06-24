@@ -1,0 +1,57 @@
+// QUICK TEST - Paste this directly into the browser console
+
+console.log('🧪 QUICK CAPTURE TEST\n');
+
+// Step 1: Check if chrome runtime works
+console.log('1️⃣ Testing chrome.runtime.sendMessage...');
+chrome.runtime.sendMessage({ action: "captureVisibleTab" }, (res) => {
+  if (chrome.runtime.lastError) {
+    console.error('❌ Error:', chrome.runtime.lastError.message);
+    return;
+  }
+  if (res?.dataUrl) {
+    console.log('✅ Screenshot received! URL length:', res.dataUrl.length);
+    console.log('✅ Background can capture pages');
+  } else {
+    console.error('❌ No data URL returned');
+  }
+});
+
+// Step 2: Check if capture script can inject
+setTimeout(() => {
+  console.log('\n2️⃣ Testing capture.js injection...');
+  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    console.log('- Target tab ID:', tab.id);
+    console.log('- Target URL:', tab.url);
+    
+    if (tab.url.startsWith('chrome://') || tab.url.startsWith('about:')) {
+      console.error('❌ Current page is not injectable (chrome:// or about:)');
+      return;
+    }
+    
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["capture.js"]
+    }, () => {
+      if (chrome.runtime.lastError) {
+        console.error('❌ Injection failed:', chrome.runtime.lastError.message);
+      } else {
+        console.log('✅ capture.js injected - check console for [TokenExtractor] logs');
+      }
+    });
+  });
+}, 1000);
+
+// Step 3: Check shadow DOM support
+setTimeout(() => {
+  console.log('\n3️⃣ Testing shadow DOM support...');
+  try {
+    const test = document.createElement('div');
+    const shadow = test.attachShadow({ mode: 'open' });
+    console.log('✅ Shadow DOM supported');
+  } catch (err) {
+    console.error('❌ Shadow DOM not supported:', err);
+  }
+}, 2000);
+
+console.log('\n⏳ Tests running... Check back in 3 seconds for results');
