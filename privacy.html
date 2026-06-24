@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy - Design Token Extractor</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; }
+    main { max-width: 860px; margin: 40px auto; padding: 24px; background: #111827; border: 1px solid #374151; border-radius: 12px; }
+    h1, h2 { color: #f8fafc; }
+    p, li { line-height: 1.65; color: #cbd5e1; }
+    a { color: #93c5fd; }
+    .small { color: #94a3b8; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Privacy Policy</h1>
+    <p class="small">Last updated: 2026-06-24</p>
+
+    <p>
+      Design Token Extractor processes page styles locally in your browser to provide token extraction,
+      smart capture, and live editor functionality.
+    </p>
+
+    <h2>Data Collection</h2>
+    <ul>
+      <li>We do not sell personal data.</li>
+      <li>We do not collect or transmit personal browsing content to external servers for analytics.</li>
+      <li>Any extracted style data is processed locally in the extension UI.</li>
+    </ul>
+
+    <h2>Storage Usage Justification</h2>
+    <p>
+      The extension uses <code>chrome.storage.local</code> to store user preferences and UI state,
+      including selected interface mode, floating panel position/size, and editor state flags.
+      This data remains on the user device and is used only to provide extension functionality.
+    </p>
+
+    <h2>Permissions</h2>
+    <ul>
+      <li><code>activeTab</code>, <code>scripting</code>, and <code>tabs</code> are used to inject tools and extract tokens from the active page.</li>
+      <li><code>storage</code> is used to persist extension settings.</li>
+      <li><code>sidePanel</code> is used to support side panel mode.</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>
+      For support or privacy questions, visit the <a href="./support.html">Support page</a>.
+    </p>
+  </main>
+</body>
+</html>
