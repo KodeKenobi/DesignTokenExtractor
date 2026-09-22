@@ -318,6 +318,11 @@
       hideMinimizeBubble();
       sendResponse({ success: true });
       return false;
+    } else if (request.action === "checkEditorState") {
+      // editor.js isn't injected until the user enables it, so answer here
+      // to avoid an unanswered message port closing with an error.
+      sendResponse({ enabled: false });
+      return false;
     }
 
     return false;

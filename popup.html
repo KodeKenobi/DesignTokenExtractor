@@ -643,6 +643,17 @@
       </h1>
     </div>
     <div style="display: flex; gap: 8px; align-items: center;">
+      <button id="shortcutsBtn" title="Keyboard Shortcuts"
+        style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="6" y1="9" x2="6" y2="9"></line>
+          <line x1="10" y1="9" x2="10" y2="9"></line>
+          <line x1="14" y1="9" x2="14" y2="9"></line>
+          <line x1="18" y1="9" x2="18" y2="9"></line>
+          <line x1="7" y1="15" x2="17" y2="15"></line>
+        </svg>
+      </button>
       <button id="minimizeBtn" title="Minimize to Overlay Bubble"
         style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -746,17 +757,17 @@
           <h3 style="color: #fbbf24;">More of our tools</h3>
 
           <div class="stat-card ad-card"
-            data-url="https://chromewebstore.google.com/detail/leakfinder/aocfmcfgbmobbhebbedjognakcfdgcbc?authuser=0&hl=en"
+            data-url="https://apps.microsoft.com/detail/9nkv7chs7v73?hl=en-US&gl=US"
             style="position: relative; text-align: left; padding: 16px; margin-bottom: 12px; cursor: pointer; background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div style="font-size: 14px; font-weight: 700; color: #fff;">LeakFinder</div>
+              <div style="font-size: 14px; font-weight: 700; color: #fff;">ActiveDesk</div>
               <div
-                style="font-size: 10px; background: #ef4444; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 800;">
+                style="font-size: 10px; background: #10b981; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 800;">
                 NEW</div>
             </div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; font-weight: 300;">Detect
-              security leaks: exposed endpoints, insecure storage, and embedded secrets.</div>
-            <div style="font-size: 11px; font-weight: 600; color: #ef4444;">Secure your site →</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; font-weight: 300;">Keep your
+              Slack/Teams/Discord status active automatically — never show "Away" again.</div>
+            <div style="font-size: 11px; font-weight: 600; color: #10b981;">Stay Active →</div>
 
             <!-- Bold, Prominent Info Trigger -->
             <div class="info-trigger"
@@ -777,26 +788,6 @@
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; font-weight: 300;">Save
               everything, everywhere. The ultimate bookmarking tool.</div>
             <div style="font-size: 11px; font-weight: 600; color: #fbbf24;">Get Extension →</div>
-
-            <!-- Bold, Prominent Info Trigger -->
-            <div class="info-trigger"
-              style="position: absolute; bottom: 12px; right: 12px; width: 22px; height: 22px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); transition: all 0.2s;">
-              <span style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800;">i</span>
-            </div>
-          </div>
-
-          <div class="stat-card ad-card"
-            data-url="https://chromewebstore.google.com/detail/trevnoctilla-pdf-editor-f/omlefdknpedeaocpmfaikmiplkdiigpm"
-            style="position: relative; text-align: left; padding: 16px; margin-bottom: 12px; cursor: pointer; background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <div style="font-size: 14px; font-weight: 700; color: #fff;">Trevnoctilla Power Suite</div>
-              <div
-                style="font-size: 10px; background: #6366f1; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 800;">
-                FREE</div>
-            </div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; font-weight: 300;">Video/GIF
-              conversion, Pro PDF tools, OCR, and Developer APIs.</div>
-            <div style="font-size: 11px; font-weight: 600; color: #6366f1;">Explore Power Tools →</div>
 
             <!-- Bold, Prominent Info Trigger -->
             <div class="info-trigger"
@@ -989,6 +980,10 @@
             <button class="export-button" id="sidebar-export-scss">SCSS</button>
             <button class="export-button" id="sidebar-export-tw">TW</button>
           </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+            <button class="export-button" id="sidebar-undo-btn">↶ Undo</button>
+            <button class="export-button" id="sidebar-redo-btn">↷ Redo</button>
+          </div>
           <button id="sidebar-reset-btn" class="button secondary"
             style="width: 100%; padding: 12px; font-size: 13px; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #f87171;">
             Reset Element
@@ -1004,14 +999,36 @@
   </div>
 
   <footer>
-    <div style="font-size: 11px; font-weight: 600; opacity: 0.8;">
+    <!-- <div style="font-size: 11px; font-weight: 600; opacity: 0.8;">
       Made with ❤️ by
       <a href="https://www.trevnoctilla.com" target="_blank" style="color: var(--primary); text-decoration: none;">the
         Trevnoctilla Team</a>
-    </div>
+    </div> -->
   </footer>
 
   <div id="adPreview" class="ad-preview-card"></div>
+
+  <div id="shortcutsModal" class="modal-overlay">
+    <div class="modal-content" style="text-align: left; max-width: 340px;">
+      <button id="closeShortcutsModal" class="modal-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-title" style="text-align: center;">Keyboard Shortcuts</div>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12px; margin-top: 16px;">
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Smart Capture</span><code>Alt+S</code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Undo (capture editor)</span><code>Ctrl/Cmd+Z</code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Redo (capture editor)</span><code>Ctrl/Cmd+Shift+Z</code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Duplicate item</span><code>Ctrl/Cmd+D</code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Delete item</span><code>Delete</code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Deselect / Close editor</span><code>Escape</code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Undo style edit (Live Editor)</span><code>Ctrl/Cmd+Z</code></div>
+        <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Redo style edit (Live Editor)</span><code>Ctrl/Cmd+Shift+Z</code></div>
+      </div>
+    </div>
+  </div>
 
   <div id="supportModal" class="modal-overlay">
     <div class="modal-content">

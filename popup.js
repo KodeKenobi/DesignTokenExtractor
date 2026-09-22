@@ -44,10 +44,7 @@ if (!chrome.tabs) {
         queryInfo,
       })
         .then((response) => response.tabs || [])
-        .catch((error) => {
-          console.warn("[TokenExtractor] Tab query failed:", error);
-          return [];
-        });
+        .catch(() => []);
 
       if (typeof callback === "function") {
         promise.then((tabs) => callback(tabs));
@@ -318,6 +315,16 @@ async function initializePopup() {
   const adPreview = document.getElementById("adPreview");
   const hasAdPreview = !!adPreview;
   const extensionDetails = {
+    "https://apps.microsoft.com/detail/9nkv7chs7v73?hl=en-US&gl=US": {
+      title: "ActiveDesk",
+      desc: "Automatically keeps your status active in Slack, Teams, Discord, Zoom, and more—so you're never marked Away or Idle while working.",
+      features: [
+        "Auto Activity Pulses",
+        "15+ Platforms Supported",
+        "Lightweight Background Toggle",
+      ],
+      badge: "NEW",
+    },
     "https://chromewebstore.google.com/detail/bookmarkitall/maloifpahagnengnobedhammfhhojjie":
       {
         title: "BookmarkItAll",
@@ -329,30 +336,8 @@ async function initializePopup() {
         ],
         badge: "POPULAR",
       },
-    "https://chromewebstore.google.com/detail/trevnoctilla-pdf-editor-f/omlefdknpedeaocpmfaikmiplkdiigpm":
-      {
-        title: "Trevnoctilla Media & PDF Suite",
-        desc: "The ultimate in-browser powerhouse. Convert 2GB videos, edit/sign PDFs, extract text with OCR, and automate with Developer APIs—no software required.",
-        features: [
-          "Pro Video & GIF Converter",
-          "OCR & PDF Document Suite",
-          "Developer API & QR Tools",
-        ],
-        badge: "FREE",
-      },
-    "https://chromewebstore.google.com/detail/leakfinder/aocfmcfgbmobbhebbedjognakcfdgcbc?authuser=0&hl=en":
-      {
-        title: "LeakFinder Security Scanner",
-        desc: "Detect browser-visible security leaks: exposed endpoints, insecure storage, weak CORS, and embedded secrets.",
-        features: [
-          "Secret & Token Scanning",
-          "CORS & Header Audit",
-          "Sensitive Storage Detection",
-          "Exposed Endpoint Mapping",
-        ],
-        badge: "NEW",
-      },
   };
+
 
   // Add capture info to extensionDetails if needed for hover, or just stick to existing ones
 
@@ -570,6 +555,28 @@ async function initializePopup() {
       }
     });
 
+  const sendEditorAction = async (action) => {
+    try {
+      const tabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      const tab = tabs?.[0];
+      if (tab) {
+        await chrome.tabs.sendMessage(tab.id, { action });
+      }
+    } catch (error) {
+      console.warn(`[TokenExtractor] ${action} error:`, error);
+    }
+  };
+
+  document
+    .getElementById("sidebar-undo-btn")
+    .addEventListener("click", () => sendEditorAction("undoElementStyle"));
+  document
+    .getElementById("sidebar-redo-btn")
+    .addEventListener("click", () => sendEditorAction("redoElementStyle"));
+
   [
     "sidebar-export-json",
     "sidebar-export-css",
@@ -688,6 +695,16 @@ async function initializePopup() {
       pendingExport = null;
     }
   });
+
+  // Keyboard shortcuts cheat sheet
+  document.getElementById("shortcutsBtn").addEventListener("click", () => {
+    document.getElementById("shortcutsModal").classList.add("visible");
+  });
+  document
+    .getElementById("closeShortcutsModal")
+    .addEventListener("click", () => {
+      document.getElementById("shortcutsModal").classList.remove("visible");
+    });
 
   // Initialize editor state
   try {

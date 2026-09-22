@@ -234,6 +234,7 @@
     gridSize: 10,
     textSize: 24,
     textBold: true,
+    stepCounter: 1,
   };
 
   // 4. Initial Capture
@@ -266,9 +267,13 @@
       <div class="pill-drag-handle" title="Drag to move toolbar"></div>
       <div class="btn" title="Pencil" data-tool="pen">${svgPath("pen")}</div>
       <div class="btn" title="Arrow" data-tool="arrow">${svgPath("arrow")}</div>
+      <div class="btn" title="Line" data-tool="line">${svgPath("line")}</div>
       <div class="btn active" title="Rectangle" data-tool="rect">${svgPath("rect")}</div>
+      <div class="btn" title="Ellipse" data-tool="ellipse">${svgPath("ellipse")}</div>
       <div class="btn" title="Marker" data-tool="marker">${svgPath("marker")}</div>
       <div class="btn" title="Redact" data-tool="redact">${svgPath("redact")}</div>
+      <div class="btn" title="Blur" data-tool="blur">${svgPath("blur")}</div>
+      <div class="btn" title="Step Marker" data-tool="stepmarker">${svgPath("stepmarker")}</div>
       <div class="btn" title="Text" data-tool="text">${svgPath("text")}</div>
       
       <div class="group-divider"></div>
@@ -374,7 +379,7 @@
         state.h += dy;
       }
     } else if (state.mode === "move") {
-      state.x += e.clientX - state.startX;
+      state.x += p.x - state.startX;
       state.y += e.clientY - state.startY;
       state.startX = e.clientX;
       state.startY = e.clientY;
@@ -427,6 +432,18 @@
           state.tempPoints = [];
           renderDrawings();
           openTextInput(p0.x, p0.y);
+        } else if (state.tool === "stepmarker") {
+          const p0 = state.tempPoints[0];
+          state.history.push({
+            tool: "stepmarker",
+            color: state.color,
+            points: [p0],
+            number: state.stepCounter++,
+          });
+          state.redoStack = [];
+          pushUndoSnapshot();
+          state.tempPoints = [];
+          renderDrawings();
         } else {
           state.history.push({
             tool: state.tool,
@@ -743,8 +760,37 @@
     drawSelectedItemHandles();
   }
 
-  function drawItem(item) {
-    const ctx = drawCtx;
+  // Downsamples then upsamples the region so it reads as chunky pixelation
+  // instead of a flat block. `deviceMap` converts the item's CSS-pixel rect
+  // into raw canvas pixel coordinates when ctx has a scale transform applied
+  // (getImageData/drawImage-from-canvas ignore the current transform).
+  function pixelateRect(ctx, bgSource, x, y, w, h, deviceMap) {
+    if (w < 1 || h < 1 || !bgSource) return;
+    const dx = deviceMap ? x * deviceMap.scaleX + deviceMap.offsetX : x;
+    const dy = deviceMap ? y * deviceMap.scaleY + deviceMap.offsetY : y;
+    const dw = deviceMap ? w * deviceMap.scaleX : w;
+    const dh = deviceMap ? h * deviceMap.scaleY : h;
+    if (dw < 1 || dh < 1) return;
+
+    const blockSize = 16;
+    const smallW = Math.max(1, Math.round(dw / blockSize));
+    const smallH = Math.max(1, Math.round(dh / blockSize));
+
+    const small = document.createElement("canvas");
+    small.width = smallW;
+    small.height = smallH;
+    const smallCtx = small.getContext("2d");
+    smallCtx.imageSmoothingEnabled = true;
+    smallCtx.drawImage(bgSource, dx, dy, dw, dh, 0, 0, smallW, smallH);
+
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(small, 0, 0, smallW, smallH, dx, dy, dw, dh);
+    ctx.restore();
+  }
+
+  function drawItem(item, ctx = drawCtx, bgSource = bgCanvas, deviceMap = null) {
     ctx.save();
     ctx.strokeStyle = item.color;
     ctx.fillStyle = item.color;
@@ -765,6 +811,36 @@
     } else if (item.tool === "rect") {
       const last = p[p.length - 1];
       ctx.strokeRect(p[0].x, p[0].y, last.x - p[0].x, last.y - p[0].y);
+    } else if (item.tool === "ellipse") {
+      const last = p[p.length - 1];
+      const cx = (p[0].x + last.x) / 2;
+      const cy = (p[0].y + last.y) / 2;
+      const rx = Math.abs(last.x - p[0].x) / 2;
+      const ry = Math.abs(last.y - p[0].y) / 2;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, Math.max(rx, 1), Math.max(ry, 1), 0, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (item.tool === "line") {
+      const last = p[p.length - 1];
+      ctx.beginPath();
+      ctx.moveTo(p[0].x, p[0].y);
+      ctx.lineTo(last.x, last.y);
+      ctx.stroke();
+    } else if (item.tool === "stepmarker") {
+      const radius = 16;
+      ctx.globalAlpha = 1.0;
+      ctx.beginPath();
+      ctx.arc(p[0].x, p[0].y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = item.color;
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "700 15px Outfit, sans-serif";
+      ctx.fillText(String(item.number || 1), p[0].x, p[0].y + 1);
     } else if (item.tool === "arrow") {
       const start = p[0],
         end = p[p.length - 1];
@@ -812,6 +888,13 @@
       ctx.globalAlpha = 0.92;
       ctx.fillStyle = "#000000";
       ctx.fillRect(x, y, w, h);
+    } else if (item.tool === "blur") {
+      const last = p[p.length - 1];
+      const x = Math.min(p[0].x, last.x);
+      const y = Math.min(p[0].y, last.y);
+      const w = Math.abs(last.x - p[0].x);
+      const h = Math.abs(last.y - p[0].y);
+      pixelateRect(ctx, bgSource, x, y, w, h, deviceMap);
     }
     ctx.restore();
   }
@@ -1017,6 +1100,16 @@
       };
     }
 
+    if (item.tool === "stepmarker") {
+      const r = 16;
+      return {
+        minX: pts[0].x - r,
+        minY: pts[0].y - r,
+        maxX: pts[0].x + r,
+        maxY: pts[0].y + r,
+      };
+    }
+
     const xs = pts.map((p) => p.x);
     const ys = pts.map((p) => p.y);
     return {
@@ -1163,7 +1256,16 @@
       return x >= b.minX && x <= b.maxX && y >= b.minY && y <= b.maxY;
     }
 
-    if (item.tool === "rect" || item.tool === "redact") {
+    if (item.tool === "stepmarker") {
+      return Math.hypot(x - p[0].x, y - p[0].y) <= 20;
+    }
+
+    if (
+      item.tool === "rect" ||
+      item.tool === "redact" ||
+      item.tool === "blur" ||
+      item.tool === "ellipse"
+    ) {
       const b = getItemBounds(item);
       return (
         x >= b.minX - 8 && x <= b.maxX + 8 && y >= b.minY - 8 && y <= b.maxY + 8
@@ -1193,32 +1295,45 @@
   }
 
   async function getCroppedBlob() {
+    // state.img is captured at device-pixel resolution while state.x/y/w/h
+    // (and all annotations) are in CSS-pixel space, so scale the source rect
+    // to native pixels or the crop/annotations will drift out of alignment.
+    const scaleX = state.img.naturalWidth / bgCanvas.width;
+    const scaleY = state.img.naturalHeight / bgCanvas.height;
+
     const canvas = document.createElement("canvas");
-    canvas.width = state.w;
-    canvas.height = state.h;
+    // Export at native resolution instead of CSS-pixel size, otherwise the
+    // screenshot gets downscaled and looks blurry on high-DPI displays.
+    canvas.width = state.w * scaleX;
+    canvas.height = state.h * scaleY;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(
       state.img,
-      state.x,
-      state.y,
-      state.w,
-      state.h,
+      state.x * scaleX,
+      state.y * scaleY,
+      state.w * scaleX,
+      state.h * scaleY,
       0,
       0,
-      state.w,
-      state.h,
+      canvas.width,
+      canvas.height,
     );
-    ctx.drawImage(
-      drawCanvas,
-      state.x,
-      state.y,
-      state.w,
-      state.h,
-      0,
-      0,
-      state.w,
-      state.h,
-    );
+    // Redraw annotations directly at native resolution instead of scaling up
+    // the CSS-pixel drawCanvas bitmap, which would otherwise look blurry.
+    // The blur tool samples pixels from `canvas` itself (the already-drawn
+    // background), so its device-pixel offset/scale is passed explicitly
+    // since getImageData/drawImage-from-canvas ignore the ctx transform.
+    const deviceMap = {
+      scaleX,
+      scaleY,
+      offsetX: -state.x * scaleX,
+      offsetY: -state.y * scaleY,
+    };
+    ctx.save();
+    ctx.translate(-state.x * scaleX, -state.y * scaleY);
+    ctx.scale(scaleX, scaleY);
+    state.history.forEach((item) => drawItem(item, ctx, canvas, deviceMap));
+    ctx.restore();
     return new Promise((r) => canvas.toBlob(r, "image/png"));
   }
 
@@ -1236,10 +1351,16 @@
       arrow:
         '<line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>',
       rect: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>',
+      ellipse: '<ellipse cx="12" cy="12" rx="9" ry="6"></ellipse>',
+      line: '<line x1="4" y1="20" x2="20" y2="4"></line>',
+      stepmarker:
+        '<circle cx="12" cy="12" r="9"></circle><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" stroke="none" fill="currentColor">1</text>',
       marker:
         '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>',
       redact:
         '<rect x="4" y="5" width="16" height="14" rx="2" ry="2"></rect><line x1="4" y1="10" x2="20" y2="10"></line><line x1="4" y1="14" x2="20" y2="14"></line>',
+      blur:
+        '<rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7" opacity="0.6"></rect><rect x="3" y="14" width="7" height="7" opacity="0.6"></rect><rect x="14" y="14" width="7" height="7" opacity="0.3"></rect>',
       text: '<polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="12" y1="4" x2="12" y2="20"></line>',
       undo: '<path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>',
       redo: '<path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>',

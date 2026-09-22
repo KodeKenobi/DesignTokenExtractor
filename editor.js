@@ -5,6 +5,31 @@
   let editorEnabled = false;
   let selectedElement = null;
   let hoveredElement = null;
+  let styleUndoStack = [];
+  let styleRedoStack = [];
+
+  function pushStyleUndoSnapshot(el) {
+    if (!el) return;
+    styleUndoStack.push({ el, cssText: el.style.cssText });
+    if (styleUndoStack.length > 100) styleUndoStack.shift();
+    styleRedoStack = [];
+  }
+
+  function undoStyleChange() {
+    const entry = styleUndoStack.pop();
+    if (!entry) return false;
+    styleRedoStack.push({ el: entry.el, cssText: entry.el.style.cssText });
+    entry.el.style.cssText = entry.cssText;
+    return true;
+  }
+
+  function redoStyleChange() {
+    const entry = styleRedoStack.pop();
+    if (!entry) return false;
+    styleUndoStack.push({ el: entry.el, cssText: entry.el.style.cssText });
+    entry.el.style.cssText = entry.cssText;
+    return true;
+  }
 
   function getVisibleBackgroundColor(el) {
     const styles = window.getComputedStyle(el);
@@ -132,6 +157,12 @@
           action: "editorClosed",
         });
       }
+      return;
+    }
+    if (editorEnabled && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+      e.preventDefault();
+      if (e.shiftKey) redoStyleChange();
+      else undoStyleChange();
     }
   }
 
@@ -253,6 +284,7 @@
         enabled: editorEnabled,
       });
     } else if (request.action === "updateElementStyle" && selectedElement) {
+      pushStyleUndoSnapshot(selectedElement);
       selectedElement.style[request.property] = request.value;
       sendResponse({
         success: true,
@@ -262,7 +294,12 @@
         success: false,
         error: "No element is selected",
       });
+    } else if (request.action === "undoElementStyle") {
+      sendResponse({ success: undoStyleChange() });
+    } else if (request.action === "redoElementStyle") {
+      sendResponse({ success: redoStyleChange() });
     } else if (request.action === "resetElementStyle" && selectedElement) {
+      pushStyleUndoSnapshot(selectedElement);
       selectedElement.style.cssText = "";
       sendResponse({
         success: true,
