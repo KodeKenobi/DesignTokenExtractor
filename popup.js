@@ -706,6 +706,8 @@ async function initializePopup() {
       document.getElementById("shortcutsModal").classList.remove("visible");
     });
 
+  setupRatingModal();
+
   // Initialize editor state
   try {
     const tabs = await chrome.tabs.query({
@@ -779,6 +781,7 @@ async function performExtraction() {
       displayTokens(response.tokens);
       loading.style.display = "none";
       results.style.display = "block";
+      trackUsageAndMaybePromptRating();
     } else {
       throw new Error(response?.error || "No tokens extracted");
     }
@@ -790,6 +793,111 @@ async function performExtraction() {
   } finally {
     btn.disabled = false;
   }
+}
+
+// Shared Supabase project (same one used by ActiveDesk) — anon key is a
+// publishable client key, safe to embed; RLS only allows INSERT.
+const SUPABASE_URL = "https://nibzfmjwisfdmwublvyu.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Cq5ljxAxHRZOJU4wiGc07g_6vrFU0lA";
+
+async function submitRatingFeedback(rating, text) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/extension_feedback`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        extension: "design-token-extractor",
+        rating,
+        feedback_text: text || null,
+        extension_version: chrome.runtime.getManifest().version,
+      }),
+    });
+  } catch (error) {
+    console.warn("[TokenExtractor] Feedback submit failed:", error);
+  }
+}
+
+// Rating prompt: asks after every 3rd successful extraction, unless dismissed.
+async function trackUsageAndMaybePromptRating() {
+  try {
+    const data = await chrome.storage.local.get([
+      "rateUsageCount",
+      "rateDismissed",
+    ]);
+    if (data.rateDismissed) return;
+
+    const count = (data.rateUsageCount || 0) + 1;
+    await chrome.storage.local.set({ rateUsageCount: count });
+
+    if (count > 0 && count % 3 === 0) {
+      document.getElementById("rateModal").classList.add("visible");
+    }
+  } catch (error) {
+    console.warn("[TokenExtractor] Rating prompt error:", error);
+  }
+}
+
+function setupRatingModal() {
+  const modal = document.getElementById("rateModal");
+  const stars = document.querySelectorAll(".rate-star");
+  const feedbackPanel = document.getElementById("rateFeedbackPanel");
+  const thanks = document.getElementById("rateThanks");
+  const notNowBtn = document.getElementById("rateNotNow");
+  let selectedRating = 0;
+
+  const closeModal = () => {
+    modal.classList.remove("visible");
+    feedbackPanel.style.display = "none";
+    thanks.style.display = "none";
+    notNowBtn.style.display = "block";
+    stars.forEach((s) => (s.style.color = "#475569"));
+  };
+
+  document.getElementById("closeRateModal").addEventListener("click", closeModal);
+  notNowBtn.addEventListener("click", closeModal);
+
+  stars.forEach((star) => {
+    star.addEventListener("click", async () => {
+      const rating = parseInt(star.dataset.star, 10);
+      selectedRating = rating;
+      stars.forEach((s) => {
+        s.style.color = parseInt(s.dataset.star, 10) <= rating ? "#fbbf24" : "#475569";
+      });
+
+      if (rating >= 4) {
+        await chrome.storage.local.set({ rateDismissed: true });
+        submitRatingFeedback(rating, null);
+        const reviewUrl = `https://chromewebstore.google.com/detail/${chrome.runtime.id}/reviews`;
+        chrome.tabs.create({ url: reviewUrl });
+        setTimeout(closeModal, 400);
+      } else {
+        notNowBtn.style.display = "none";
+        feedbackPanel.style.display = "block";
+      }
+    });
+  });
+
+  document
+    .getElementById("rateFeedbackSubmit")
+    .addEventListener("click", async () => {
+      const text = document.getElementById("rateFeedbackText").value.trim();
+      const data = await chrome.storage.local.get(["rateFeedback"]);
+      const feedback = data.rateFeedback || [];
+      if (text) feedback.push({ text, date: Date.now() });
+      await submitRatingFeedback(selectedRating, text);
+      await chrome.storage.local.set({
+        rateFeedback: feedback,
+        rateDismissed: true,
+      });
+      feedbackPanel.style.display = "none";
+      thanks.style.display = "block";
+      setTimeout(closeModal, 1500);
+    });
 }
 
 // Live Editor Toggle

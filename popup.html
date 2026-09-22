@@ -1048,6 +1048,35 @@
     </div>
   </div>
 
+  <div id="rateModal" class="modal-overlay">
+    <div class="modal-content">
+      <button id="closeRateModal" class="modal-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-title">Enjoying Design Extractor?</div>
+      <p class="modal-desc">Tap a star to let us know how we're doing.</p>
+      <div id="rateStars" style="display: flex; justify-content: center; gap: 6px; margin-bottom: 20px;">
+        <button class="rate-star" data-star="1" style="background:none;border:none;font-size:32px;cursor:pointer;color:#475569;transition:color .15s;">★</button>
+        <button class="rate-star" data-star="2" style="background:none;border:none;font-size:32px;cursor:pointer;color:#475569;transition:color .15s;">★</button>
+        <button class="rate-star" data-star="3" style="background:none;border:none;font-size:32px;cursor:pointer;color:#475569;transition:color .15s;">★</button>
+        <button class="rate-star" data-star="4" style="background:none;border:none;font-size:32px;cursor:pointer;color:#475569;transition:color .15s;">★</button>
+        <button class="rate-star" data-star="5" style="background:none;border:none;font-size:32px;cursor:pointer;color:#475569;transition:color .15s;">★</button>
+      </div>
+      <div id="rateFeedbackPanel" style="display:none;">
+        <textarea id="rateFeedbackText" placeholder="What could we improve?" rows="3"
+          style="width:100%;padding:10px 12px;background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:10px;color:#fff;font-size:12px;font-family:inherit;resize:none;margin-bottom:12px;outline:none;"></textarea>
+        <button id="rateFeedbackSubmit" class="modal-btn modal-btn-pay" style="width:100%;">Send Feedback</button>
+      </div>
+      <div id="rateThanks" style="display:none; color: var(--success); font-weight: 700; font-size: 14px;">
+        Thanks for the feedback! 🙌
+      </div>
+      <button id="rateNotNow" class="modal-btn modal-btn-ad" style="width:100%; margin-top: 8px;">Not now</button>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 
