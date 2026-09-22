@@ -53,6 +53,12 @@ out/
 *.xpi
 
 # =========================
+# Store listing docs (local only)
+# =========================
+CHANGELOG.md
+CHROME_STORE_DESCRIPTION.md
+
+# =========================
 # Environment & Secrets
 # =========================
 .env
