@@ -1,6 +1,6 @@
 {
   "name": "design-token-extractor",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Extract design system tokens (colors, spacing, typography) from any website",
   "type": "module",
   "scripts": {
